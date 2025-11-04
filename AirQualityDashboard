@@ -1,0 +1,251 @@
+import React, { useState } from 'react';
+import { BarChart, Bar, LineChart, Line, ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
+
+const AirPollutionDashboard = () => {
+  const [selectedView, setSelectedView] = useState('comparison');
+
+  const data = [
+    { date: '2024-10-28', city: 'Los Angeles', country: 'USA', aqi: 68, category: 'Moderate', pm25: 16.0, pm10: 32.0, no2: 87.0, o3: 0.0, temp: 16 },
+    { date: '2024-10-29', city: 'Los Angeles', country: 'USA', aqi: 65, category: 'Moderate', pm25: 10.0, pm10: 36.0, no2: 87.0, o3: 0.0, temp: 16 },
+    { date: '2024-11-01', city: 'Los Angeles', country: 'USA', aqi: 68, category: 'Moderate', pm25: 19.0, pm10: 27.0, no2: 11.0, o3: 32.0, temp: 23 },
+    { date: '2024-11-02', city: 'Los Angeles', country: 'USA', aqi: 68, category: 'Moderate', pm25: 12.0, pm10: 36.0, no2: 87.0, o3: 0.0, temp: 16 },
+    { date: '2024-10-28', city: 'New York City', country: 'USA', aqi: 27, category: 'Good', pm25: 7.0, pm10: 0.0, no2: 5.0, o3: 27.0, temp: 12 },
+    { date: '2024-10-29', city: 'New York City', country: 'USA', aqi: 23, category: 'Good', pm25: 7.0, pm10: 0.0, no2: 5.0, o3: 27.0, temp: 11 },
+    { date: '2024-11-01', city: 'New York City', country: 'USA', aqi: 27, category: 'Good', pm25: 7.0, pm10: 0.0, no2: 5.0, o3: 27.0, temp: 13 },
+    { date: '2024-11-02', city: 'New York City', country: 'USA', aqi: 27, category: 'Good', pm25: 7.0, pm10: 0.0, no2: 5.0, o3: 27.0, temp: 12 },
+    { date: '2024-10-28', city: 'Paris', country: 'France', aqi: 28, category: 'Good', pm25: 8.0, pm10: 25.0, no2: 23.0, o3: 26.0, temp: 10 },
+    { date: '2024-10-29', city: 'Paris', country: 'France', aqi: 28, category: 'Good', pm25: 8.0, pm10: 25.0, no2: 23.0, o3: 26.0, temp: 10 },
+    { date: '2024-10-30', city: 'Paris', country: 'France', aqi: 28, category: 'Good', pm25: 8.0, pm10: 25.0, no2: 23.0, o3: 26.0, temp: 10 },
+    { date: '2024-11-02', city: 'Paris', country: 'France', aqi: 28, category: 'Good', pm25: 8.0, pm10: 16.0, no2: 53.0, o3: 8.0, temp: 10 },
+    { date: '2023-06-07', city: 'New York City', country: 'USA', aqi: 400, category: 'Hazardous', pm25: 350.0, pm10: 0.0, no2: 0.0, o3: 0.0, temp: 18 },
+    { date: '2023-06-08', city: 'New York City', country: 'USA', aqi: 413, category: 'Hazardous', pm25: 900.0, pm10: 0.0, no2: 0.0, o3: 0.0, temp: 19 },
+    { date: '2024-07-05', city: 'New York City', country: 'USA', aqi: 105, category: 'Unhealthy_Sensitive', pm25: 45.0, pm10: 0.0, no2: 15.0, o3: 100.0, temp: 28 },
+    { date: '2019-06-15', city: 'Los Angeles', country: 'USA', aqi: 85, category: 'Moderate', pm25: 32.0, pm10: 45.0, no2: 95.0, o3: 45.0, temp: 26 },
+    { date: '2022-01-15', city: 'New York City', country: 'USA', aqi: 42, category: 'Good', pm25: 11.0, pm10: 0.0, no2: 8.0, o3: 20.0, temp: 2 },
+    { date: '2024-01-15', city: 'Los Angeles', country: 'USA', aqi: 72, category: 'Moderate', pm25: 20.0, pm10: 38.0, no2: 92.0, o3: 15.0, temp: 14 },
+    { date: '2024-06-15', city: 'Los Angeles', country: 'USA', aqi: 65, category: 'Moderate', pm25: 15.0, pm10: 30.0, no2: 85.0, o3: 38.0, temp: 22 },
+  ];
+
+  const cityAverages = [
+    { city: 'Los Angeles', avgAqi: 69, avgPm25: 17.7 },
+    { city: 'New York City', avgAqi: 85, avgPm25: 133.9 },
+    { city: 'Paris', avgAqi: 28, avgPm25: 8.0 }
+  ];
+
+  const getAqiColor = (aqi) => {
+    if (aqi <= 50) return '#10b981';
+    if (aqi <= 100) return '#f59e0b';
+    if (aqi <= 150) return '#f97316';
+    if (aqi <= 200) return '#ef4444';
+    if (aqi <= 300) return '#a855f7';
+    return '#7f1d1d';
+  };
+
+  const recentData = data.filter(d => d.date.startsWith('2024-1'));
+
+  return (
+    <div className="w-full min-h-screen bg-white p-8">
+      <div className="max-w-6xl mx-auto">
+        <div className="mb-6">
+          <h1 className="text-3xl font-semibold text-gray-900 mb-1">Air Quality Data</h1>
+          <p className="text-gray-600 text-sm">Los Angeles, New York City, Paris</p>
+        </div>
+
+        <div className="flex gap-2 mb-8 border-b border-gray-200">
+          <button
+            onClick={() => setSelectedView('comparison')}
+            className={`px-4 py-2 text-sm font-medium ${
+              selectedView === 'comparison' 
+                ? 'text-gray-900 border-b-2 border-gray-900' 
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            Overview
+          </button>
+          <button
+            onClick={() => setSelectedView('timeline')}
+            className={`px-4 py-2 text-sm font-medium ${
+              selectedView === 'timeline' 
+                ? 'text-gray-900 border-b-2 border-gray-900' 
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            Trends
+          </button>
+          <button
+            onClick={() => setSelectedView('pollutants')}
+            className={`px-4 py-2 text-sm font-medium ${
+              selectedView === 'pollutants' 
+                ? 'text-gray-900 border-b-2 border-gray-900' 
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            Details
+          </button>
+        </div>
+
+        {selectedView === 'comparison' && (
+          <div className="space-y-8">
+            <div className="grid grid-cols-3 gap-6">
+              {cityAverages.map((city) => (
+                <div key={city.city} className="bg-gray-50 p-6 border border-gray-200">
+                  <p className="text-xs text-gray-500 uppercase tracking-wide mb-3">{city.city}</p>
+                  <div className="mb-4">
+                    <div className="text-4xl font-light text-gray-900 mb-1">{Math.round(city.avgAqi)}</div>
+                    <div className="text-xs text-gray-500">Air Quality Index</div>
+                  </div>
+                  <div className="text-sm text-gray-700">
+                    PM2.5: <span className="font-medium">{city.avgPm25.toFixed(1)}</span> µg/m³
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="bg-white border border-gray-200 p-6">
+              <h2 className="text-lg font-medium text-gray-900 mb-6">Air Quality Index by City</h2>
+              <ResponsiveContainer width="100%" height={320}>
+                <BarChart data={cityAverages}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
+                  <XAxis dataKey="city" stroke="#6b7280" tick={{ fontSize: 12 }} />
+                  <YAxis stroke="#6b7280" tick={{ fontSize: 12 }} />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: 'white', border: '1px solid #e5e7eb' }}
+                    labelStyle={{ color: '#111827', fontWeight: 500 }}
+                  />
+                  <Bar dataKey="avgAqi" fill="#6b7280" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+
+            <div className="bg-white border border-gray-200 p-6">
+              <h2 className="text-lg font-medium text-gray-900 mb-6">PM2.5 Concentration</h2>
+              <ResponsiveContainer width="100%" height={320}>
+                <BarChart data={cityAverages}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
+                  <XAxis dataKey="city" stroke="#6b7280" tick={{ fontSize: 12 }} />
+                  <YAxis stroke="#6b7280" tick={{ fontSize: 12 }} />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: 'white', border: '1px solid #e5e7eb' }}
+                    labelStyle={{ color: '#111827', fontWeight: 500 }}
+                  />
+                  <Bar dataKey="avgPm25" fill="#9ca3af" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        )}
+
+        {selectedView === 'timeline' && (
+          <div className="bg-white border border-gray-200 p-6">
+            <h2 className="text-lg font-medium text-gray-900 mb-6">Recent Measurements</h2>
+            <ResponsiveContainer width="100%" height={400}>
+              <LineChart data={recentData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <XAxis dataKey="date" stroke="#6b7280" tick={{ fontSize: 12 }} />
+                <YAxis stroke="#6b7280" tick={{ fontSize: 12 }} />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: 'white', border: '1px solid #e5e7eb' }}
+                  labelStyle={{ color: '#111827', fontWeight: 500 }}
+                />
+                <Legend />
+                <Line type="monotone" dataKey="aqi" stroke="#374151" strokeWidth={2} name="Los Angeles" data={recentData.filter(d => d.city === 'Los Angeles')} dot={{ r: 4 }} />
+                <Line type="monotone" dataKey="aqi" stroke="#6b7280" strokeWidth={2} name="New York City" data={recentData.filter(d => d.city === 'New York City')} dot={{ r: 4 }} />
+                <Line type="monotone" dataKey="aqi" stroke="#9ca3af" strokeWidth={2} name="Paris" data={recentData.filter(d => d.city === 'Paris')} dot={{ r: 4 }} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        )}
+
+        {selectedView === 'pollutants' && (
+          <div className="space-y-8">
+            <div className="bg-white border border-gray-200 p-6">
+              <h2 className="text-lg font-medium text-gray-900 mb-6">PM2.5 vs Air Quality Index</h2>
+              <ResponsiveContainer width="100%" height={400}>
+                <ScatterChart>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <XAxis dataKey="pm25" name="PM2.5" stroke="#6b7280" tick={{ fontSize: 12 }} label={{ value: 'PM2.5 (µg/m³)', position: 'insideBottom', offset: -5, fill: '#6b7280' }} />
+                  <YAxis dataKey="aqi" name="AQI" stroke="#6b7280" tick={{ fontSize: 12 }} label={{ value: 'AQI', angle: -90, position: 'insideLeft', fill: '#6b7280' }} />
+                  <Tooltip 
+                    cursor={{ strokeDasharray: '3 3' }}
+                    contentStyle={{ backgroundColor: 'white', border: '1px solid #e5e7eb' }}
+                    labelStyle={{ color: '#111827', fontWeight: 500 }}
+                  />
+                  <Legend />
+                  <Scatter name="Los Angeles" data={data.filter(d => d.city === 'Los Angeles')} fill="#374151" />
+                  <Scatter name="New York City" data={data.filter(d => d.city === 'New York City')} fill="#6b7280" />
+                  <Scatter name="Paris" data={data.filter(d => d.city === 'Paris')} fill="#9ca3af" />
+                </ScatterChart>
+              </ResponsiveContainer>
+            </div>
+
+            <div className="grid grid-cols-2 gap-8">
+              <div className="bg-white border border-gray-200 p-6">
+                <h2 className="text-lg font-medium text-gray-900 mb-6">Nitrogen Dioxide</h2>
+                <ResponsiveContainer width="100%" height={240}>
+                  <BarChart data={recentData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
+                    <XAxis dataKey="city" stroke="#6b7280" tick={{ fontSize: 11 }} />
+                    <YAxis stroke="#6b7280" tick={{ fontSize: 11 }} />
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: 'white', border: '1px solid #e5e7eb' }}
+                      labelStyle={{ color: '#111827', fontWeight: 500 }}
+                    />
+                    <Bar dataKey="no2" fill="#6b7280" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+
+              <div className="bg-white border border-gray-200 p-6">
+                <h2 className="text-lg font-medium text-gray-900 mb-6">Particulate Matter 10</h2>
+                <ResponsiveContainer width="100%" height={240}>
+                  <BarChart data={recentData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
+                    <XAxis dataKey="city" stroke="#6b7280" tick={{ fontSize: 11 }} />
+                    <YAxis stroke="#6b7280" tick={{ fontSize: 11 }} />
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: 'white', border: '1px solid #e5e7eb' }}
+                      labelStyle={{ color: '#111827', fontWeight: 500 }}
+                    />
+                    <Bar dataKey="pm10" fill="#9ca3af" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="mt-8 pt-6 border-t border-gray-200">
+          <p className="text-xs text-gray-500 mb-3">AQI Categories</p>
+          <div className="flex flex-wrap gap-x-6 gap-y-2">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-green-500"></div>
+              <span className="text-xs text-gray-600">0-50 Good</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-yellow-500"></div>
+              <span className="text-xs text-gray-600">51-100 Moderate</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-orange-500"></div>
+              <span className="text-xs text-gray-600">101-150 Unhealthy (sensitive)</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-red-500"></div>
+              <span className="text-xs text-gray-600">151-200 Unhealthy</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-purple-500"></div>
+              <span className="text-xs text-gray-600">201-300 Very unhealthy</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-red-900"></div>
+              <span className="text-xs text-gray-600">301+ Hazardous</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AirPollutionDashboard;
